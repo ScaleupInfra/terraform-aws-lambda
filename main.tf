@@ -7,3 +7,7 @@ module "lambda" {
   authorization        = "NONE"                                  # string
   iam_role_name        = "iam_for_lambda_tf"                     # string */
 }
+
+output "url" {
+  value = module.lambda.public_endpoint
+}
