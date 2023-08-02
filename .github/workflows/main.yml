@@ -5,9 +5,12 @@ on:
     branches:
       - master
 
+env:
+  AWS_REGION: ap-northeast-1
+
 jobs:
-  terraform:
-    name: Terraform
+  setup:
+    name: Setup and Init
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -18,16 +21,31 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-1
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Terraform Init
         run: terraform init
 
+  plan:
+    name: Plan
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
       - name: Terraform Plan
         run: terraform plan
 
+  apply:
+    name: Apply
+    needs: plan
+    runs-on: ubuntu-latest
+    steps:
       - name: Terraform Apply
         run: terraform apply -auto-approve
 
+  destroy:
+    name: Destroy
+    needs: apply
+    runs-on: ubuntu-latest
+    steps:
       - name: Terraform Destroy
         run: terraform destroy -auto-approve
