@@ -1,0 +1,71 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: terraform-plan-apply-destroy
+spec:
+  params:
+    - name: ARGS
+      description: The terraform cli commands to run
+      type: array
+      default:
+        - init
+  steps:
+    - name: init
+      image: "docker.io/hashicorp/terraform:light"
+      command:
+        - terraform
+        - init
+
+    - name: terraform-plan
+      image: "docker.io/hashicorp/terraform:light"
+      env:
+        - name: AWS_ACCESS_KEY_ID
+          value: <your_key>
+        - name: AWS_SECRET_ACCESS_KEY
+          value: <your_token>
+      command:
+        - terraform
+        - plan
+
+    - name: terraform-apply
+      image: "docker.io/hashicorp/terraform:light"
+      env:
+        - name: AWS_ACCESS_KEY_ID
+          value: <your_key>
+        - name: AWS_SECRET_ACCESS_KEY
+          value: <your_token>
+      command:
+        - terraform
+        - apply
+        - "-auto-approve"
+
+    - name: terraform-destroy
+      image: "docker.io/hashicorp/terraform:light"
+      env:
+        - name: AWS_ACCESS_KEY_ID
+          value: <your_key>
+        - name: AWS_SECRET_ACCESS_KEY
+          value: <your_token>
+      command:
+        - terraform
+        - destroy
+        - "-auto-approve"
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: terraform-pipeline
+spec:
+  tasks:
+    - name: terraform-plan-apply-destroy
+      taskRef:
+        name: terraform-plan-apply-destroy
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: run-terraform-pipeline
+spec:
+  pipelineRef:
+    name: terraform-pipeline
