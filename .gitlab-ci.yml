@@ -1,0 +1,25 @@
+# make a file named ".gitlab-ci.yml" in the root directory
+# this file contains a pre-defined template from gitlab itself
+
+include:
+  - template: Terraform/Base.gitlab-ci.yml
+
+variables:
+  AWS_ACCESS_KEY_ID: "$AWS_ACCESS_KEY_ID"
+  AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
+
+stages:
+  - validate
+  - build
+  - deploy
+
+validate:
+  extends: .terraform:validate
+
+build:
+  extends: .terraform:build
+
+terraform_deploy:
+  stage: deploy
+  script:
+    - gitlab-terraform apply -auto-approve
