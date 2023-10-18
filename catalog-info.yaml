@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "terraform-aws-lambda"
+  description: "app to test backstage for existing repo"
+  annotations:
+    github.com/project-slug: ScaleupInfra/terraform-aws-lambda
+spec:
+  type: service
+  owner: user:guest
+  lifecycle: experimental
